@@ -1,0 +1,30 @@
+{
+  "name": "mandrill-client",
+  "version": "0.0.1",
+  "description": "A light-weight wrapper for the mandrill API",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.34",
+    "eslint": "^1.3.0",
+    "expect.js": "^0.3.1",
+    "nock": "^2.10.0",
+    "schemajs": "^0.1.12",
+    "superagent": "^1.3.0",
+    "superagent-promise": "^1.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/pearlshare/mandrill-client.git"
+  },
+  "author": "Aaron Taylor <aaron@pearlshare.com> (http://pearlshare.com)",
+  "homepage": "https://bitbucket.org/pearlshare/mandrill-client#readme"
+}
