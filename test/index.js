@@ -11,7 +11,7 @@ describe("mandrill-client", function(){
   describe("makeRequest", function() {
 
     it("should resolve to empty array if mandrill not enabled", function() {
-      config.enabled = false;
+      config.mandrill.enabled = false;
 
       mandrill.makeRequest("messages/send.json", {}).then(function(res) {
         expect(res).to.be.a("array");
@@ -20,7 +20,7 @@ describe("mandrill-client", function(){
     });
 
     it("should make a request if mandrill is enabled", function() {
-      config.enabled = true;
+      config.mandrill.enabled = true;
 
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
@@ -36,8 +36,22 @@ describe("mandrill-client", function(){
 
   describe("sendMessage", function() {
 
+    it("should throw an error if there is an invalid message", function() {
+      config.mandrill.enabled = true;
+
+      var badMessage = {
+        shouldBeHere: false
+      };
+
+      mandrill.sendMessage(badMessage).then(function(res) {
+        console.log("Shouldn't run!");
+      }).catch(function(err) {
+        expect(err);
+      });
+    });
+
     it("should send a message", function() {
-      config.enabled = true;
+      config.mandrill.enabled = true;
 
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
@@ -56,6 +70,7 @@ describe("mandrill-client", function(){
           }
         ]
       };
+
       mandrill.sendMessage(message).then(function(res) {
         expect(res.body).to.be.an(Array);
         expect(res.body[0].email).to.equal("recipient.email@example.com");
