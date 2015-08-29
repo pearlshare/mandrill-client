@@ -47,6 +47,7 @@ describe("mandrill-client", function(){
         console.log("Shouldn't run!");
       }).catch(function(err) {
         expect(err);
+        expect(err.message).to.eql("mandrill message not valid");
       });
     });
 
