@@ -1,18 +1,48 @@
 var expect = require("expect.js");
 var nock = require("nock");
 var messageResponse = require("./fixtures/message_response");
-var config = require("./config");
-var errors = require("./errors");
-var logger = require("./logger");
-var mandrill = require("../lib")(config, errors, logger);
+var mandrillClient = require("../");
+
+var config = {
+  apiKey: "API_KEY",
+  enabled: false, // Disabled for testing
+  reqTimeout: 5 * 1000
+}
 
 describe("mandrill-client", function(){
 
+  describe("configuration", function () {
+    it("should return an object if configuation is correct", function () {
+      expect(mandrillClient({apiKey: "123ABC"})).to.be.a("object");
+    });
+
+    it("should throw an error if no configuration object is given", function () {
+      try {
+        mandrillClient();
+        expect().fail("should build the mandrill client");
+      } catch (err) {
+        expect(err).to.be.an(Error);
+        expect(err.message).to.match(/config/);
+      }
+    });
+
+    it("should throw an error if no apiKey configuration is given", function () {
+      try {
+        mandrillClient({});
+        expect().fail("should build the mandrill client");
+      } catch (err) {
+        expect(err).to.be.an(Error);
+        expect(err.message).to.match(/apiKey/);
+      }
+    });
+
+  });
+
   describe("makeRequest", function() {
 
-    it("should resolve to empty array if mandrill not enabled", function() {
-      config.mandrill.enabled = false;
+    var mandrill = mandrillClient(config);
 
+    it("should resolve to empty array if mandrill not enabled", function() {
       mandrill.makeRequest("messages/send.json", {}).then(function(res) {
         expect(res).to.be.a("array");
         expect(res).to.have.length(0);
@@ -20,7 +50,7 @@ describe("mandrill-client", function(){
     });
 
     it("should make a request if mandrill is enabled", function() {
-      config.mandrill.enabled = true;
+      config.enabled = true;
 
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
@@ -35,16 +65,17 @@ describe("mandrill-client", function(){
   });
 
   describe("sendMessage", function() {
+    var mandrill = mandrillClient(config);
 
     it("should throw an error if there is an invalid message", function() {
-      config.mandrill.enabled = true;
+      config.enabled = true;
 
       var badMessage = {
         shouldBeHere: false
       };
 
       mandrill.sendMessage(badMessage).then(function(res) {
-        console.log("Shouldn't run!");
+        expect().fail("A bad message should fail the test");
       }).catch(function(err) {
         expect(err);
         expect(err.message).to.eql("mandrill message not valid");
@@ -52,12 +83,13 @@ describe("mandrill-client", function(){
     });
 
     it("should send a message", function() {
-      config.mandrill.enabled = true;
+      config.enabled = true;
 
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
         .persist()
-        .post("/api/1.0/messages/send.json").reply(200, messageResponse);
+        .post("/api/1.0/messages/send.json")
+        .reply(200, messageResponse);
 
       var message = {
         subject: "Email from Pearlshare",
