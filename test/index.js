@@ -43,7 +43,7 @@ describe("mandrill-client", function(){
     var mandrill = mandrillClient(config);
 
     it("should resolve to empty array if mandrill not enabled", function() {
-      mandrill.makeRequest("messages/send.json", {}).then(function(res) {
+      return mandrill.makeRequest("messages/send.json", {}).then(function(res) {
         expect(res).to.be.a("array");
         expect(res).to.have.length(0);
       });
@@ -57,9 +57,9 @@ describe("mandrill-client", function(){
         .persist()
         .post("/api/1.0/messages/send.json").reply(200, messageResponse);
 
-      mandrill.makeRequest("messages/send.json", {}).then(function(res) {
-        expect(res.body).to.be.a("array");
-        expect(res.body).to.have.length(1);
+      return mandrill.makeRequest("messages/send.json", {}).then(function(res) {
+        expect(res).to.be.a("array");
+        expect(res).to.have.length(1);
       });
     });
   });
@@ -74,7 +74,7 @@ describe("mandrill-client", function(){
         shouldBeHere: false
       };
 
-      mandrill.sendMessage(badMessage).then(function(res) {
+      return mandrill.sendMessage(badMessage).then(function(res) {
         expect().fail("A bad message should fail the test");
       }).catch(function(err) {
         expect(err);
@@ -104,10 +104,10 @@ describe("mandrill-client", function(){
         ]
       };
 
-      mandrill.sendMessage(message).then(function(res) {
-        expect(res.body).to.be.an(Array);
-        expect(res.body[0].email).to.equal("recipient.email@example.com");
-        expect(res.body[0].status).to.equal("sent");
+      return mandrill.sendMessage(message).then(function(res) {
+        expect(res).to.be.an(Array);
+        expect(res[0].email).to.equal("recipient.email@example.com");
+        expect(res[0].status).to.equal("sent");
       });
     });
   });
