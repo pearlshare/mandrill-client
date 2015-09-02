@@ -58,8 +58,8 @@ describe("mandrill-client", function(){
         .post("/api/1.0/messages/send.json").reply(200, messageResponse);
 
       return mandrill.makeRequest("messages/send.json", {}).then(function(res) {
-        expect(res).to.be.a("array");
-        expect(res).to.have.length(1);
+        expect(res.body).to.be.a("array");
+        expect(res.body).to.have.length(1);
       });
     });
   });
@@ -105,9 +105,9 @@ describe("mandrill-client", function(){
       };
 
       return mandrill.sendMessage(message).then(function(res) {
-        expect(res).to.be.an(Array);
-        expect(res[0].email).to.equal("recipient.email@example.com");
-        expect(res[0].status).to.equal("sent");
+        expect(res.body).to.be.an(Array);
+        expect(res.body[0].email).to.equal("recipient.email@example.com");
+        expect(res.body[0].status).to.equal("sent");
       });
     });
   });
