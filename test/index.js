@@ -62,6 +62,20 @@ describe("mandrill-client", function(){
         expect(res.body).to.have.length(1);
       });
     });
+
+    it("should handle an response with statusCode 400", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
+      nock("https://mandrillapp.com")
+        .persist()
+        .post("/api/1.0/test").reply(400, []);
+
+      return mandrill.makeRequest("test", {}).then(function(res) {
+        expect(res.statusCode).to.eql(400);
+        expect(res.body).to.be.a("array");
+      });
+    });
   });
 
   describe("sendMessage", function() {
