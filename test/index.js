@@ -13,7 +13,13 @@ describe("mandrill-client", function(){
 
   describe("configuration", function () {
     it("should return an object if configuation is correct", function () {
-      expect(mandrillClient({apiKey: "123ABC"})).to.be.a("object");
+      expect(mandrillClient({apiKey: "123ABC"})).to.be.an("object");
+    });
+
+    it("should not require an apiKey if it is not enabled", function() {
+      expect(mandrillClient({
+        enabled: false
+      })).to.be.an("object")
     });
 
     it("should throw an error if no configuration object is given", function () {
