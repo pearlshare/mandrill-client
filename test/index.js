@@ -130,5 +130,42 @@ describe("mandrill-client", function(){
         expect(res.body[0].status).to.equal("sent");
       });
     });
+
+    it("should send to template URL when using templates", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages for templates
+      nock("https://mandrillapp.com")
+        .persist()
+        .post("/api/1.0/messages/send-template.json")
+        .reply(200, messageResponse);
+
+      var message = {
+        subject: "Email from Pearlshare",
+        html: "<p>An email message especially for you!</p>",
+        "from_name": "Pearlshare",
+        "from_email": "team@pearlshare.com",
+        to: [
+          {
+            name: "test",
+            email: "test@example.com"
+          }
+        ]
+      };
+
+      return mandrill.sendMessage(message, {
+        "template_name": "some template_name",
+        "template_content": [
+          {
+            "name": "some name",
+            "content": "some content"
+          }
+        ]
+      }).then(function(res) {
+        expect(res.body).to.be.an(Array);
+        expect(res.body[0].email).to.equal("recipient.email@example.com");
+        expect(res.body[0].status).to.equal("sent");
+      });
+    });
   });
 });
