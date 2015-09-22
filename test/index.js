@@ -9,7 +9,7 @@ var config = {
   reqTimeout: 5 * 1000
 }
 
-describe("mandrill-client", function(){
+describe("mandrill-client", function () {
 
   describe("configuration", function () {
     it("should return an object if configuation is correct", function () {
@@ -41,10 +41,9 @@ describe("mandrill-client", function(){
         expect(err.message).to.match(/apiKey/);
       }
     });
-
   });
 
-  describe("makeRequest", function() {
+  describe("makeRequest", function () {
 
     var mandrill = mandrillClient(config);
 
@@ -84,17 +83,17 @@ describe("mandrill-client", function(){
     });
   });
 
-  describe("sendMessage", function() {
+  describe("sendMessage", function () {
     var mandrill = mandrillClient(config);
 
     it("should throw an error if there is an invalid message", function() {
       config.enabled = true;
 
-      var badMessage = {
+      var badData = {
         shouldBeHere: false
       };
 
-      return mandrill.sendMessage(badMessage).then(function(res) {
+      return mandrill.sendMessage(badData).then(function(res) {
         expect().fail("A bad message should fail the test");
       }).catch(function(err) {
         expect(err);
@@ -107,7 +106,6 @@ describe("mandrill-client", function(){
 
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
-        .persist()
         .post("/api/1.0/messages/send.json")
         .reply(200, messageResponse);
 
@@ -125,24 +123,41 @@ describe("mandrill-client", function(){
       };
 
       return mandrill.sendMessage(message).then(function(res) {
-        expect(res.body).to.be.an(Array);
+        expect(res.body).to.be.an("array");
         expect(res.body[0].email).to.equal("recipient.email@example.com");
         expect(res.body[0].status).to.equal("sent");
       });
     });
+  });
 
-    it("should send to template URL when using templates", function() {
+  describe("sendMessageTemplate", function () {
+    var mandrill = mandrillClient(config);
+
+    it("should throw an error if there is invalid data", function() {
       config.enabled = true;
 
-      // Nock out mandrill messages for templates
+      var badData = {
+        shouldBeHere: false
+      };
+
+      return mandrill.sendMessageTemplate(badData).then(function(res) {
+        expect().fail("A bad message should fail the test");
+      }).catch(function(err) {
+        expect(err);
+        expect(err.message).to.match(/template/);
+      });
+    });
+
+    it("should send a message with a template", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
       nock("https://mandrillapp.com")
-        .persist()
         .post("/api/1.0/messages/send-template.json")
         .reply(200, messageResponse);
 
       var message = {
         subject: "Email from Pearlshare",
-        html: "<p>An email message especially for you!</p>",
         "from_name": "Pearlshare",
         "from_email": "team@pearlshare.com",
         to: [
@@ -153,16 +168,163 @@ describe("mandrill-client", function(){
         ]
       };
 
-      return mandrill.sendMessage(message, {
-        "template_name": "some template_name",
-        "template_content": [
-          {
-            "name": "some name",
-            "content": "some content"
-          }
-        ]
-      }).then(function(res) {
-        expect(res.body).to.be.an(Array);
+      var values = {
+        name: "Simba",
+        occupation: "Lion"
+      };
+
+      return mandrill.sendMessage(message, values).then(function(res) {
+        expect(res.body).to.be.an("array");
+        expect(res.body[0].email).to.equal("recipient.email@example.com");
+        expect(res.body[0].status).to.equal("sent");
+      });
+    });
+  });
+
+  describe("addTemplate", function () {
+    var mandrill = mandrillClient(config);
+
+    it("should throw an error if there is invalid data", function() {
+      config.enabled = true;
+
+      var badData = {
+        shouldBeHere: false
+      };
+
+      return mandrill.addTemplate(badData).then(function(res) {
+        expect().fail("A bad message should fail the test");
+      }).catch(function(err) {
+        expect(err);
+        expect(err.message).to.match(/template/);
+      });
+    });
+
+    it("should add a template", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
+      nock("https://mandrillapp.com")
+        .post("/api/1.0/templates/add.json")
+        .reply(200, messageResponse);
+
+      var template = "<h1>Some HTML!</h1>";
+      var opts = {
+        name: "myExampleTemplate"
+      };
+
+      return mandrill.addTemplate(template, opts).then(function(res) {
+        expect(res.body).to.be.an("array");
+        expect(res.body[0].email).to.equal("recipient.email@example.com");
+        expect(res.body[0].status).to.equal("sent");
+      });
+    });
+  });
+
+  describe("getTemplate", function () {
+    var mandrill = mandrillClient(config);
+
+    it("should throw an error if there is invalid data", function() {
+      config.enabled = true;
+
+      var badData = {
+        shouldBeHere: false
+      };
+
+      return mandrill.getTemplate(badData).then(function(res) {
+        expect().fail("A bad message should fail the test");
+      }).catch(function(err) {
+        expect(err);
+        expect(err.message).to.match(/template/);
+      });
+    });
+
+    it("should get a template", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
+      nock("https://mandrillapp.com")
+        .post("/api/1.0/templates/info.json")
+        .reply(200, messageResponse);
+
+      var templateName = "exampleTemplateName";
+
+      return mandrill.getTemplate(templateName).then(function(res) {
+        expect(res.body).to.be.an("array");
+        expect(res.body[0].email).to.equal("recipient.email@example.com");
+        expect(res.body[0].status).to.equal("sent");
+      });
+    });
+  });
+  
+  describe("publishTemplate", function () {
+    var mandrill = mandrillClient(config);
+
+    it("should throw an error if there is invalid data", function() {
+      config.enabled = true;
+
+      var badData = {
+        shouldBeHere: false
+      };
+
+      return mandrill.publishTemplate(badData).then(function(res) {
+        expect().fail("A bad message should fail the test");
+      }).catch(function(err) {
+        expect(err);
+        expect(err.message).to.match(/template/);
+      });
+    });
+
+    it("should get a template", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
+      nock("https://mandrillapp.com")
+        .post("/api/1.0/templates/publish.json")
+        .reply(200, messageResponse);
+
+      var templateName = "exampleTemplateName";
+
+      return mandrill.publishTemplate(templateName).then(function(res) {
+        expect(res.body).to.be.an("array");
+        expect(res.body[0].email).to.equal("recipient.email@example.com");
+        expect(res.body[0].status).to.equal("sent");
+      });
+    });
+  });
+
+  describe("updateTemplate", function () {
+    var mandrill = mandrillClient(config);
+
+    it("should throw an error if there is invalid data", function() {
+      config.enabled = true;
+
+      var badData = {
+        shouldBeHere: false
+      };
+
+      return mandrill.updateTemplate(badData).then(function(res) {
+        expect().fail("A bad message should fail the test");
+      }).catch(function(err) {
+        expect(err);
+        expect(err.message).to.match(/template/);
+      });
+    });
+
+    it("should update a template", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
+      nock("https://mandrillapp.com")
+        .post("/api/1.0/templates/update.json")
+        .reply(200, messageResponse);
+
+      var newTemplate = "<h2>This is the new template</h2>";
+      var templateData = {
+        name: "Example template name"
+      };
+
+      return mandrill.updateTemplate(newTemplate, templateData).then(function(res) {
+        expect(res.body).to.be.an("array");
         expect(res.body[0].email).to.equal("recipient.email@example.com");
         expect(res.body[0].status).to.equal("sent");
       });
