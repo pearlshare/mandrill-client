@@ -1,6 +1,7 @@
 var expect = require("expect.js");
 var nock = require("nock");
 var messageResponse = require("./fixtures/message_response");
+var templateResponse = require("./fixtures/template_response");
 var mandrillClient = require("../");
 
 var config = {
@@ -205,7 +206,7 @@ describe("mandrill-client", function () {
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
         .post("/api/1.0/templates/add.json")
-        .reply(200, messageResponse);
+        .reply(200, templateResponse);
 
       var template = "<h1>Some HTML!</h1>";
       var opts = {
@@ -213,9 +214,9 @@ describe("mandrill-client", function () {
       };
 
       return mandrill.addTemplate(template, opts).then(function(res) {
-        expect(res.body).to.be.an("array");
-        expect(res.body[0].email).to.equal("recipient.email@example.com");
-        expect(res.body[0].status).to.equal("sent");
+        expect(res.body).to.be.an("object");
+        expect(res.body.name).to.equal("Example Template");
+        expect(res.body.code).to.be.a("string");
       });
     });
   });
@@ -244,14 +245,14 @@ describe("mandrill-client", function () {
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
         .post("/api/1.0/templates/info.json")
-        .reply(200, messageResponse);
+        .reply(200, templateResponse);
 
       var templateName = "exampleTemplateName";
 
       return mandrill.getTemplate(templateName).then(function(res) {
-        expect(res.body).to.be.an("array");
-        expect(res.body[0].email).to.equal("recipient.email@example.com");
-        expect(res.body[0].status).to.equal("sent");
+        expect(res.body).to.be.an("object");
+        expect(res.body.name).to.equal("Example Template");
+        expect(res.body.code).to.be.a("string");
       });
     });
   });
@@ -280,14 +281,14 @@ describe("mandrill-client", function () {
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
         .post("/api/1.0/templates/publish.json")
-        .reply(200, messageResponse);
+        .reply(200, templateResponse);
 
       var templateName = "exampleTemplateName";
 
       return mandrill.publishTemplate(templateName).then(function(res) {
-        expect(res.body).to.be.an("array");
-        expect(res.body[0].email).to.equal("recipient.email@example.com");
-        expect(res.body[0].status).to.equal("sent");
+        expect(res.body).to.be.an("object");
+        expect(res.body.name).to.equal("Example Template");
+        expect(res.body.code).to.be.a("string");
       });
     });
   });
@@ -316,7 +317,7 @@ describe("mandrill-client", function () {
       // Nock out mandrill messages
       nock("https://mandrillapp.com")
         .post("/api/1.0/templates/update.json")
-        .reply(200, messageResponse);
+        .reply(200, templateResponse);
 
       var newTemplate = "<h2>This is the new template</h2>";
       var templateData = {
@@ -324,9 +325,9 @@ describe("mandrill-client", function () {
       };
 
       return mandrill.updateTemplate(newTemplate, templateData).then(function(res) {
-        expect(res.body).to.be.an("array");
-        expect(res.body[0].email).to.equal("recipient.email@example.com");
-        expect(res.body[0].status).to.equal("sent");
+        expect(res.body).to.be.an("object");
+        expect(res.body.name).to.equal("Example Template");
+        expect(res.body.code).to.be.a("string");
       });
     });
   });
