@@ -331,4 +331,27 @@ describe("mandrill-client", function () {
       });
     });
   });
+
+  describe("listTemplates", function () {
+    var mandrill = mandrillClient(config);
+
+    it("should list all templates associated with the user", function() {
+      config.enabled = true;
+
+      // Nock out mandrill messages
+      nock("https://mandrillapp.com")
+        .post("/api/1.0/templates/list.json")
+        .reply(200, [
+            templateResponse,
+            templateResponse
+          ]);
+
+      return mandrill.listTemplates().then(function(res) {
+        expect(res.body).to.be.an("array");
+        expect(res.body).to.have.length(2);
+        expect(res.body[0].name).to.match(/Template/);
+        expect(res.body[0].subject).to.match(/subject/);
+      });
+    });
+  });
 });
