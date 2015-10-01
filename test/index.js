@@ -50,8 +50,8 @@ describe("mandrill-client", function () {
 
     it("should resolve to empty array if mandrill not enabled", function() {
       return mandrill.makeRequest("messages/send.json", {}).then(function(res) {
-        expect(res).to.be.a("array");
-        expect(res).to.have.length(0);
+        expect(res.body).to.be.a("array");
+        expect(res.body).to.have.length(0);
       });
     });
 
