@@ -1,3 +1,4 @@
+[![Circle CI](https://circleci.com/gh/pearlshare/mandrill-client.svg?style=svg&circle-token=7167cf456ec5e58c3f36637709fd8d919de83b7b)](https://circleci.com/gh/pearlshare/mandrill-client)
 # Mandrill Client
 
 A node.js wrapper around the [Mandrill](https://mandrillapp.com) HTTP API.

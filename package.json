@@ -22,8 +22,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/pearlshare/mandrill-client.git"
+    "url": "git+https://github.com/pearlshare/mandrill-client"
   },
   "author": "Aaron Taylor <aaron@pearlshare.com> (http://pearlshare.com)",
-  "homepage": "https://bitbucket.org/pearlshare/mandrill-client#readme"
+  "homepage": "https://github.com/pearlshare/mandrill-client"
 }
