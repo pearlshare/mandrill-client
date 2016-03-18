@@ -1,6 +1,6 @@
 {
   "name": "mandrill-client",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A light-weight wrapper for the mandrill API",
   "main": "index.js",
   "directories": {
